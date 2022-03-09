@@ -1,0 +1,20 @@
+Timpuriu Mircea    
+
+Pentru a implementa algoritmul Map-Reduce, am folosit 2 instante de ExecutorService, una pentru etapa de Map, cealalta pentru etapa de Reduce.
+Am inceput prin impartirea tuturor fisierelor oferite ca input in fragmente si trimiterea lor catre primul set de workeri
+pentru a fi analizate. Workerii primesc informatia si deschid fisierul oferit ca parametru la offset-ul respectiv (sau offset - 1, dupa caz,
+pentru a verifica daca fisierul incepe in mijlocul unui cuvant). Acestea citesc fragmentul caracter cu caracter, asambleaza sirul care 
+ar reprezenta un cuvant si cand da de un separator, adauga cuvantul intr-o lista de cuvinte gasite, si updateaza vectorul de aparitii.
+La final, dupa ce este analizat tot fragmentul, datele obtinute se pun intr-o structura de tip DictionaryEntry, structura rezultat a
+operatiei de Map, cea care trimite datele obtinute din fisiere catre coordonator. Thread-ul coordonator main asteapta ca toti workerii
+sa termine de executat task-urile, primeste rezultatele de tip DictionaryEntry intr-un syncronizedList, se verifica fisierul in care a 
+lucrat, si in functie de asta se introduc datele relevante intr-o structura de tip Dictionary, structura unui task care trebuie oferit etapei de Reduce. 
+
+In acest moment, al doilea set de workeri preiau datele de tip Dictionary, si intra in etapa de combinare, unde extrag toti vectorii de
+aparitii locali dintr-un fisier si creeaza un vector final de aparitii, si preia toate listele locale de cuvinte maxime si creeaza o 
+lista finala de cuvinte maxime ca lungime. Dupa care se intra in etapa de procesare, unde se ia fiecare lungime de cuvant gasita in
+fisier, se calculeaza valoarea cu sirul Fibonacci, si se tine cont de numarul de aparitii al unei lungimi, calculandu-se rangul
+fisierului dupa formula data in enunt. Aceasta etapa va crea o structura de tip Rank, structura rezultat a operatiilor de Reduce,
+care contine numele fisierului, rangul, lungimea maxima si numarul de cuvinte cu lungimea maxima, o clasa care contine metoda compareTo,
+iar coordonatorul preia intr-un synchronizedList toate structurile de tip Rank, le sorteaza descrescator dupa rang si afiseaza in fisierul de
+output solutia algoritmului Map-Reduce.
